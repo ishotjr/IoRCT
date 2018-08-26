@@ -24,8 +24,11 @@ namespace IoRCT
 
         const int delay = 1000; // (ms)
 
-        // create a empty I2C device object
+        // create an empty I2C device object
         static I2CDevice ds1803 = new I2CDevice(new I2CDevice.Configuration(0, 0));
+
+        // create output port object for onboard LED
+        static OutputPort led;
 
 
         // pot = 0 for wiper 0, 1 for wiper 1, *6* for both
@@ -54,30 +57,65 @@ namespace IoRCT
             return bytesTransferred;
         }
 
-        public static void Main()
+        public static int sweepPot(byte pot, int from, int to)
         {
-            // start w/ LED off
-            OutputPort led = new OutputPort(Pins.ONBOARD_LED, false);
+            if (to > from)
+            {
+                for (int i = from; i <= to; i++)
+                {
+                    setPot(pot, (byte)i);
+                    Thread.Sleep(delay);
+                }
+            }
+            else
+            {
+                for (int i = from; i >= to; i--)
+                {
+                    setPot(pot, (byte)i);
+                    Thread.Sleep(delay);
+                }
+            }
 
+            return (to - from);
+        }
 
-            // set both pots to neutral
+        public static byte centerPots()
+        {
             setPot(steeringPot, steeringCenter);
             setPot(throttlePot, throttleCenter);
 
+            return 0;
+        }
+
+
+        public static int pulseLed(int count)
+        {
+            for (int i = 1; i <= count; i++)
+            {
+                led.Write(true);
+                Thread.Sleep(250);
+                led.Write(false);
+                Thread.Sleep(150);
+            }
+
+            return count;
+        }
+
+
+        public static void Main()
+        {
+            // initialize and turn LED off
+            led = new OutputPort(Pins.ONBOARD_LED, false);
+
+
+            // set both pots to neutral
+            centerPots();
+
 
             // quick triple LED pulse to show we're starting
-            led.Write(true);
-            Thread.Sleep(250);
-            led.Write(false);
-            Thread.Sleep(150);
-            led.Write(true);
-            Thread.Sleep(250);
-            led.Write(false);
-            Thread.Sleep(150);
-            led.Write(true);
-            Thread.Sleep(250);
-            led.Write(false);
-            Thread.Sleep(1000); // wait one second at the end
+            pulseLed(3);
+            // wait one second afterwards
+            Thread.Sleep(1000);
 
             
 
@@ -85,82 +123,46 @@ namespace IoRCT
 
             // steering center to right
             Debug.Print("C->R");
-            for (int i = steeringCenter; i >= steeringRight; i--)
-            {
-                setPot(steeringPot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(steeringPot, steeringCenter, steeringRight);
             // steering right to left
             Debug.Print("R->L");
-            for (int i = steeringRight; i <= steeringLeft; i++)
-            {
-                setPot(steeringPot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(steeringPot, steeringRight, steeringLeft);
             // steering left to right
             Debug.Print("L->R");
-            for (int i = steeringLeft; i >= steeringRight; i--)
-            {
-                setPot(steeringPot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(steeringPot, steeringLeft, steeringRight);
             // steering back to center
             Debug.Print("R->C");
-            for (int i = steeringRight; i <= steeringCenter; i++)
-            {
-                setPot(steeringPot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(steeringPot, steeringRight, steeringCenter);
 
 
             // throttle neutral to max fwd
             Debug.Print("N->MF");
-            for (int i = throttleCenter; i <= throttleMax; i++)
-            {
-                setPot(throttlePot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(throttlePot, throttleCenter, throttleMax);
             // throttle max fwd to neutral
             Debug.Print("MF->N");
-            for (int i = throttleMax; i >= throttleCenter; i--)
-            {
-                setPot(throttlePot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(throttlePot, throttleMax, throttleCenter);
             // throttle neutral to max reverse
             Debug.Print("N->MR");
-            for (int i = throttleCenter; i >= throttleReverseMax; i--)
-            {
-                setPot(throttlePot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(throttlePot, throttleCenter, throttleReverseMax);
             // throttle max reverse back to neutral
             Debug.Print("MR->N");
-            for (int i = throttleReverseMax; i <= throttleCenter; i++)
-            {
-                setPot(throttlePot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(throttlePot, throttleReverseMax, throttleCenter);
 
 
 
             // slow figure 8
 
             Debug.Print("C/C");
-            setPot(steeringPot, steeringCenter);
-            setPot(throttlePot, throttleCenter);
+            centerPots();
             Thread.Sleep(delay);
+
 
             // circle right
             Debug.Print("CR");
             setPot(steeringPot, steeringRight);
 
             // speed up to half throttle while turning
-            for (int i = throttleCenter; i <= ((throttleCenter + throttleMax) / 2); i++)
-            {
-                setPot(throttlePot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(throttlePot, throttleCenter, (throttleCenter + throttleMax) / 2);
             
 
             // circle left
@@ -168,27 +170,19 @@ namespace IoRCT
             setPot(steeringPot, steeringLeft);
 
             // slow down to a stop while turning
-            for (int i = ((throttleCenter + throttleMax) / 2); i >= throttleCenter; i--)
-            {
-                setPot(throttlePot, (byte)i);
-                Thread.Sleep(delay);
-            }
+            sweepPot(throttlePot, throttleCenter, ((throttleCenter + throttleMax) / 2 + throttleCenter) / 2);
 
 
 
             // set both to neutral
             Debug.Print("STOP");
-            setPot(steeringPot, steeringCenter);
-            setPot(throttlePot, throttleCenter);
+            centerPots();
 
 
             // flash LED to show it's over
             while (true)
             {
-                led.Write(true);
-                Thread.Sleep(250);
-                led.Write(false);
-                Thread.Sleep(150);
+                pulseLed(1);
             }
 
         }
