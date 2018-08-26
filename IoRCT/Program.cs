@@ -1,9 +1,8 @@
-using System;
 using System.Threading;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
-using SecretLabs.NETMF.Hardware;
 using SecretLabs.NETMF.Hardware.Netduino;
+using Maple;
 
 namespace IoRCT
 {
@@ -31,8 +30,8 @@ namespace IoRCT
 
         public static void Main()
         {
-            // initialize and turn LED off
-            led = new OutputPort(Pins.ONBOARD_LED, false);
+            // initialize and turn LED on during initialization
+            led = new OutputPort(Pins.ONBOARD_LED, true);
 
             // initialize DS1803 object with tweaked parameters for current car
             remote = new DS1803(10, 0, 20, 11, 1, 23);
@@ -40,6 +39,18 @@ namespace IoRCT
             // set both pots to neutral
             remote.centerPots();
 
+            // TODO: can't seem to get this example to work regardless of using directives/references - so going w/ this hack for now!
+            //while (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+            while (Microsoft.SPOT.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()[0].IPAddress == "0.0.0.0")
+            {
+                Debug.Print("Waiting for network...");
+                Thread.Sleep(10);
+            };
+            Debug.Print("IP: " + Microsoft.SPOT.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()[0].IPAddress);
+
+            MapleServer server = new MapleServer();
+            server.Start();
+            Debug.Print("Maple serving on http://" + Microsoft.SPOT.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()[0].IPAddress);
 
             // quick triple LED pulse to show we're starting
             pulseLed(3);
