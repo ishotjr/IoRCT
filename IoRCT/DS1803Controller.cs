@@ -22,7 +22,7 @@ namespace IoRCT
             led = new OutputPort(Pins.ONBOARD_LED, true);
 
             // initialize DS1803 object with tweaked parameters for current car
-            remote = new DS1803(10, 0, 20, 11, 1, 23);
+            remote = new DS1803(10, 0, 20, 11, 1, 23, 100);
 
             // set both pots to neutral
             remote.centerPots();
@@ -79,7 +79,7 @@ namespace IoRCT
         {
             remote.sweepPot(remote.steeringPot, remote.steeringRight, remote.steeringCenter);
         }
-        public void sweepSteeringPotLefttToCenter()
+        public void sweepSteeringPotLeftToCenter()
         {
             remote.sweepPot(remote.steeringPot, remote.steeringLeft, remote.steeringCenter);
         }
@@ -91,37 +91,52 @@ namespace IoRCT
             sweepSteeringPotCenterToLeft();
             sweepSteeringPotLeftToRight();
             sweepSteeringPotRightToLeft();
-            sweepSteeringPotLefttToCenter();
+            sweepSteeringPotLeftToCenter();
+        }
+        
+
+        public void sweepThrottlePotCenterToMaxForward()
+        {
+            remote.sweepPot(remote.throttlePot, remote.throttleCenter, remote.throttleMax);
+        }
+        public void sweepThrottlePotMaxForwardToCenter()
+        {
+            remote.sweepPot(remote.throttlePot, remote.throttleMax, remote.throttleCenter);
+        }
+        public void sweepThrottlePotCenterToMaxReverse()
+        {
+            remote.sweepPot(remote.throttlePot, remote.throttleCenter, remote.throttleReverseMax);
+        }
+        public void sweepThrottlePotMaxReverseToCenter()
+        {
+            remote.sweepPot(remote.throttlePot, remote.throttleReverseMax, remote.throttleCenter);
+        }
+
+        public void sweepThrottlePotCenterToMidForward()
+        {
+            remote.sweepPot(remote.throttlePot, remote.throttleCenter, (remote.throttleCenter + remote.throttleMax) / 2);
+        }
+        public void sweepThrottlePotMidForwardToCenter()
+        {
+            remote.sweepPot(remote.throttlePot, (remote.throttleCenter + remote.throttleMax) / 2, remote.throttleCenter);
+        }
+        public void sweepThrottlePotCenterToMidReverse()
+        {
+            remote.sweepPot(remote.throttlePot, remote.throttleCenter, (remote.throttleCenter + remote.throttleReverseMax) / 2);
+        }
+        public void sweepThrottlePotMidReverseToCenter()
+        {
+            remote.sweepPot(remote.throttlePot, (remote.throttleCenter + remote.throttleReverseMax) / 2, remote.throttleCenter);
         }
 
         /*
-        // throttle neutral to max fwd
-        Debug.Print("N->MF");
-        remote.sweepPot(remote.throttlePot, remote.throttleCenter, remote.throttleMax);
-        // throttle max fwd to neutral
-        Debug.Print("MF->N");
-        remote.sweepPot(remote.throttlePot, remote.throttleMax, remote.throttleCenter);
-        // throttle neutral to max reverse
-        Debug.Print("N->MR");
-        remote.sweepPot(remote.throttlePot, remote.throttleCenter, remote.throttleReverseMax);
-        // throttle max reverse back to neutral
-        Debug.Print("MR->N");
-        remote.sweepPot(remote.throttlePot, remote.throttleReverseMax, remote.throttleCenter);
-
-
-
-        // slow figure 8
-
-        Debug.Print("C/C");
-        remote.centerPots();
-
-
         // circle right
         Debug.Print("CR");
         remote.setPot(remote.steeringPot, remote.steeringRight);
 
         // speed up to half throttle while turning
         remote.sweepPot(remote.throttlePot, remote.throttleCenter, (remote.throttleCenter + remote.throttleMax) / 2);
+
 
 
         // circle left
