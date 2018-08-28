@@ -22,7 +22,8 @@ namespace IoRCT
             led = new OutputPort(Pins.ONBOARD_LED, true);
 
             // initialize DS1803 object with tweaked parameters for current car
-            remote = new DS1803(10, 0, 20, 11, 1, 23, 100);
+            // for some reason, MA-010 throttle endpoints are inverted...?
+            remote = new DS1803(10, 0, 20, 11, 23, 1, 100);
 
             // set both pots to neutral
             remote.centerPots();
