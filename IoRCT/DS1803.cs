@@ -7,7 +7,7 @@ using SecretLabs.NETMF.Hardware.Netduino;
 
 namespace IoRCT
 {
-    class DS1803
+    public class DS1803
     {
         public byte steeringPot = 0; // no address offset for steering
         public byte throttlePot = 1; // +1 address offset for throttle

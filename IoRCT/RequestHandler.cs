@@ -1,16 +1,16 @@
 using Maple;
 using System.Net;
 using System.Collections;
-using System.Text;
-
-using System.Threading;
-using Microsoft.SPOT.Hardware;
-using SecretLabs.NETMF.Hardware.Netduino;
+using Microsoft.SPOT;
 
 namespace IoRCT
 {
     public class RequestHandler : RequestHandlerBase
     {
+        public event EventHandler SweepSteeringPotTest = delegate { };
+
+
+
         // example is outdated per https://community.wildernesslabs.co/t/maple-project-error/623/2?u=ishotjr
         //public RequestHandler(HttpListenerContext context) : base(context)
 
@@ -50,6 +50,8 @@ namespace IoRCT
             message += "  <h1>IoRCT</h1>";
             message += "  <h2>TODO</h2>";
             message += "  <p>add clickable API documentation here!</p>";
+            message += "  <p><a href=\"/SweepSteeringPotTest\">/SweepSteeringPotTest</p>";
+            message += "  <p><a href=\"/DoSomething\">/DoSomething</p>";
             message += "";
             message += "</body>";
             message += "";
@@ -58,6 +60,18 @@ namespace IoRCT
             this.Send(message);
 
         }
+
+        public void getSweepSteeringPotTest()
+        {
+
+            SweepSteeringPotTest(this, EventArgs.Empty);
+            Context.Response.ContentType = "application/json";
+            Context.Response.StatusCode = (int)HttpStatusCode.OK;
+            Hashtable result = new Hashtable { { "result", "test complete" } };
+            this.Send(result);
+
+        }
+        
 
         public void getDoSomething()
         {
