@@ -130,31 +130,23 @@ namespace IoRCT
             remote.sweepPot(remote.throttlePot, (remote.throttleCenter + remote.throttleReverseMax) / 2, remote.throttleCenter);
         }
 
-        /*
-        // circle right
-        Debug.Print("CR");
-        remote.setPot(remote.steeringPot, remote.steeringRight);
 
-        // speed up to half throttle while turning
-        remote.sweepPot(remote.throttlePot, remote.throttleCenter, (remote.throttleCenter + remote.throttleMax) / 2);
-
-
-
-        // circle left
-        Debug.Print("CL");
-        remote.setPot(remote.steeringPot, remote.steeringLeft);
-
-        // slow down to a stop while turning
-        remote.sweepPot(remote.throttlePot, remote.throttleCenter, ((remote.throttleCenter + remote.throttleMax) / 2 + remote.throttleCenter) / 2);
+        public void circleRight()
+        {
+            remote.setPot(remote.steeringPot, remote.steeringRight);
+            remote.sweepPot(remote.throttlePot, remote.throttleCenter, remote.throttleMax);
+        }
+        public void circleLeft()
+        {
+            remote.setPot(remote.steeringPot, remote.steeringLeft);
+            remote.sweepPot(remote.throttlePot, remote.throttleCenter, remote.throttleMax);
+        }
 
 
-
-        // set both to neutral
-        Debug.Print("STOP");
-        remote.centerPots();
-
-
-        */
+        public void stop()
+        {
+            remote.centerPots();
+        }
 
     }
 }

@@ -28,6 +28,10 @@ namespace IoRCT
         public event EventHandler SweepThrottlePotCenterToMidReverse = delegate { };
         public event EventHandler SweepThrottlePotMidReverseToCenter = delegate { };
 
+        public event EventHandler CircleRight = delegate { };
+        public event EventHandler CircleLeft = delegate { };
+        public event EventHandler Stop = delegate { };
+
 
         // example is outdated per https://community.wildernesslabs.co/t/maple-project-error/623/2?u=ishotjr
         //public RequestHandler(HttpListenerContext context) : base(context)
@@ -68,6 +72,10 @@ namespace IoRCT
             message += "  <h1>IoRCT</h1>";
             message += "  <h2><a href=\"/Steering\">/Steering</href></h2>";
             message += "  <h2><a href=\"/Throttle\">/Throttle</href></h2>";
+            message += "  <h2>Other</h2>";
+            message += "  <p><a href=\"/CircleRight\">/CircleRight</href></p>";
+            message += "  <p><a href=\"/CircleLeft\">/CircleLeft</href></p>";
+            message += "  <p><a href=\"/Stop\">/Stop</href></p>";
             message += "";
             message += "</body>";
             message += "";
@@ -333,6 +341,43 @@ namespace IoRCT
 
         }
 
+
+        public void getCircleRight()
+        {
+
+            CircleRight(this, EventArgs.Empty);
+
+            Context.Response.ContentType = "application/json";
+            Context.Response.StatusCode = (int)HttpStatusCode.OK;
+            Hashtable result = new Hashtable { { "result", "circling right" } };
+            this.Send(result);
+
+        }
+
+        public void getCircleLeft()
+        {
+
+            CircleLeft(this, EventArgs.Empty);
+
+            Context.Response.ContentType = "application/json";
+            Context.Response.StatusCode = (int)HttpStatusCode.OK;
+            Hashtable result = new Hashtable { { "result", "circling left" } };
+            this.Send(result);
+
+        }
+
+
+        public void getStop()
+        {
+
+            Stop(this, EventArgs.Empty);
+
+            Context.Response.ContentType = "application/json";
+            Context.Response.StatusCode = (int)HttpStatusCode.OK;
+            Hashtable result = new Hashtable { { "result", "set steering and throttle to center" } };
+            this.Send(result);
+
+        }
 
     }
 }

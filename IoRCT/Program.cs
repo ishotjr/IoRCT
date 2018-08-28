@@ -45,7 +45,12 @@ namespace IoRCT
             handler.SweepThrottlePotMidForwardToCenter += (s, e) => { remoteController.sweepThrottlePotMidForwardToCenter(); };
             handler.SweepThrottlePotCenterToMidReverse += (s, e) => { remoteController.sweepThrottlePotCenterToMidReverse(); };
             handler.SweepThrottlePotMidReverseToCenter += (s, e) => { remoteController.sweepThrottlePotMidReverseToCenter(); };
-            
+
+            handler.CircleRight += (s, e) => { remoteController.circleRight(); };
+            handler.CircleLeft += (s, e) => { remoteController.circleLeft(); };
+
+            handler.Stop += (s, e) => { remoteController.stop(); };
+
             maple = new MapleServer();
             maple.AddHandler(handler);
             maple.Start();
