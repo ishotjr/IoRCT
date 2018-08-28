@@ -57,8 +57,8 @@ namespace IoRCT
             // wait one second afterwards
             Thread.Sleep(1000);
 
-            
 
+            /*
             // sweeps
 
             // steering center to right
@@ -116,14 +116,14 @@ namespace IoRCT
             // set both to neutral
             Debug.Print("STOP");
             remote.centerPots();
-
-
+            
+            
+            */
             // flash LED to show it's over
             while (true)
             {
-                pulseLed(1);
+                //pulseLed(1);
             }
-
         }
     }
 }
